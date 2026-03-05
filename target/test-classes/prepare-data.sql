@@ -1,0 +1,41 @@
+INSERT INTO Machine(
+    device_id,
+    code,
+    institute_id,
+    factory_id,
+    workshop_id,
+    machine_group_id,
+    cylinder_diameter,
+    needle_spacing,
+    needle_number,
+    status,
+    creator_id,
+    operator_id
+) values (
+    '1',
+    'code1',
+    1,
+    1,
+    1,
+    1,
+    28,
+    20,
+    1440,
+    2,
+    1,
+    1
+),(
+    '2',
+    'code2',
+    1,
+    1,
+    1,
+    1,
+    28,
+    20,
+    1440,
+    2,
+    1,
+    1
+);
+

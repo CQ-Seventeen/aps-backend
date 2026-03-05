@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.CodeGeneratorMapper">
+
+    <sql id="tableName">Code_Generate</sql>
+
+    <select id="lock" resultType="java.lang.Long">
+        SELECT
+            current_number
+        FROM
+        <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and type = #{type}
+        for update 
+    </select>
+    
+    <update id="updateAtomically">
+        UPDATE
+        <include refid="tableName"/>
+        SET current_number = current_number + #{number}
+        WHERE institute_id = #{instituteId} and type = #{type}
+    </update>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.ScheduleLogMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.ScheduleLogPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="log_id" jdbcType="BIGINT" property="logId"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Schedule_Log</sql>
+    <sql id="insertColumns">
+        institute_id,
+        log_id,
+        type,
+        operate_time,
+        creator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        log_id,
+        type,
+        operate_time,
+        create_time,
+        creator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.ScheduleLogPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        ) VALUES
+        (
+            #{po.instituteId},
+            #{po.logId},
+            #{po.type},
+            #{po.operateTime},
+            #{po.creatorId}
+        )
+    </insert>
+
+    <select id="searchScheduleLog" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and deleted_at = 0
+            <if test="qo.type != null">
+                AND type = #{qo.type}
+            </if>
+        ORDER BY operate_time desc
+    </select>
+</mapper>

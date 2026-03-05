@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.mes.MesMachineMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.MesMachinePO">
+        <result column="f_machine_id" jdbcType="BIGINT" property="id"/>
+        <result column="f_outer_id" jdbcType="VARCHAR" property="outerId"/>
+        <result column="f_machine_code" jdbcType="VARCHAR" property="machineCode"/>
+        <result column="f_machine_number" jdbcType="VARCHAR" property="machineNumber"/>
+        <result column="f_machine_type" jdbcType="VARCHAR" property="machineType"/>
+        <result column="f_area" jdbcType="VARCHAR" property="area"/>
+        <result column="f_cylinder_diameter" jdbcType="VARCHAR" property="cylinderDiameter"/>
+        <result column="f_needle_spacing" jdbcType="VARCHAR" property="needleSpacing"/>
+        <result column="f_create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="f_update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="f_deleted" jdbcType="BIGINT" property="deleted"/>
+    </resultMap>
+
+    <resultMap id="machineSize" type="com.santoni.iot.aps.infrastructure.po.assistance.MesSizePO">
+        <result column="f_cylinder_diameter" jdbcType="VARCHAR" property="cylinderDiameter"/>
+        <result column="f_needle_spacing" jdbcType="VARCHAR" property="needleSpacing"/>
+    </resultMap>
+
+    <sql id="tableName">T_Machine_Info</sql>
+
+    <sql id="selectColumns">
+        f_machine_id,
+        f_outer_id,
+        f_machine_code,
+        f_machine_number,
+        f_machine_type,
+        f_area,
+        f_cylinder_diameter,
+        f_needle_spacing,
+        f_create_time,
+        f_update_time,
+        f_deleted
+    </sql>
+
+    <select id="getById" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            f_machine_id = #{id} and f_deleted = 0
+    </select>
+
+    <select id="listById" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            f_machine_id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            and f_deleted = 0
+    </select>
+
+    <select id="getByDeviceId" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE f_machine_code = #{deviceId} and f_deleted = 0
+    </select>
+
+    <select id="listByOptions" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE f_deleted = 0
+        <if test="qo.sizeList != null and qo.sizeList.size > 0">
+            and (f_cylinder_diameter, f_needle_spacing) in
+            <foreach collection="qo.sizeList" item="size" open="(" separator="," close=")">
+                (#{size.cylinderDiameter}, #{size.needleSpacing})
+            </foreach>
+        </if>
+        <if test="qo.typeList != null and qo.typeList.size > 0">
+            and f_machine_type in
+            <foreach collection="qo.typeList" item = "type" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="searchMachine" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE f_deleted = 0
+
+        <if test="qo.cylinderDiameterList != null and qo.cylinderDiameterList.size > 0">
+            and f_cylinder_diameter in
+            <foreach collection="qo.cylinderDiameterList" item="cylinderDiameter" open="(" separator="," close=")">
+                #{cylinderDiameter}
+            </foreach>
+        </if>
+        <if test="qo.needleSpacingList != null and qo.needleSpacingList.size > 0">
+            and f_needle_spacing in
+            <foreach collection="qo.needleSpacingList" item="needleSpacing" open="(" separator="," close=")">
+                #{needleSpacing}
+            </foreach>
+        </if>
+
+        <if test="qo.typeList != null and qo.typeList.size > 0">
+            and f_machine_type in
+            <foreach collection="qo.typeList" item = "type" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="qo.areaList != null and qo.areaList.size > 0">
+            and f_area in
+            <foreach collection="qo.areaList" item = "area" open="(" separator="," close=")">
+                #{area}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="listAll" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE f_deleted = 0
+    </select>
+
+    <select id="getAllMachineType" resultType="java.lang.String">
+        SELECT distinct f_machine_type
+        FROM
+            <include refid="tableName"/>
+        WHERE f_deleted = 0
+    </select>
+
+    <select id="getAllSize" resultMap="machineSize">
+        SELECT distinct
+            f_cylinder_diameter,
+            f_needle_spacing
+        FROM
+            <include refid="tableName"/>
+        WHERE f_deleted = 0
+    </select>
+
+    <select id="getAllArea" resultType="java.lang.String">
+        SELECT distinct f_area
+        FROM
+            <include refid="tableName"/>
+        WHERE f_deleted = 0
+    </select>
+</mapper>

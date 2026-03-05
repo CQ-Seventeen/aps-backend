@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.CustomerMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.CustomerPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Customer</sql>
+    <sql id="insertColumns">
+        institute_id,
+        code,
+        name
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        code,
+        name,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.CustomerPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        ) VALUES
+        (
+            #{po.instituteId},
+            #{po.code},
+            #{po.name}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.CustomerPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+            <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.code},
+                #{po.name}
+            )
+            </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.CustomerPO">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            name = #{po.name}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <update id="batchUpdate" parameterType="com.santoni.iot.aps.infrastructure.po.CustomerPO">
+        <foreach collection="poList" item="po" separator=";">
+            UPDATE
+                <include refid="tableName"/>
+            SET
+                name = #{po.name}
+            WHERE
+                id = #{po.id} and deleted_at = 0
+        </foreach>
+    </update>
+
+    <select id="getByCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and code = #{code} and deleted_at = 0
+    </select>
+
+    <select id="listByCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="searchCustomer" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and deleted_at = 0
+            <if test="qo.code != null and qo.code != ''">
+                AND code like '%${qo.code}%'
+            </if>
+    </select>
+</mapper>

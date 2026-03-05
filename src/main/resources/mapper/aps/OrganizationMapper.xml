@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.OrganizationMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.OrganizationPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Organization</sql>
+    <sql id="insertColumns">
+        code,
+        parent_id,
+        level
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        code,
+        parent_id,
+        level,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.OrganizationPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.code},
+            #{po.parentId},
+            #{po.level}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.OrganizationPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+        (
+            #{po.code},
+            #{po.parentId},
+            #{po.level}
+        )
+        </foreach>
+
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.OrganizationPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            parent_id = #{po.parentId},
+            level = #{po.level}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="getById" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="listChildren" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            parent_id = #{parentId} and deleted_at = 0
+    </select>
+
+    <select id="pathFromLeaf" resultMap="result">
+        WITH RECURSIVE org_path AS
+        (
+            SELECT
+                <include refid="selectColumns"/>
+            FROM
+                <include refid="tableName"/>
+            WHERE id = #{leafId} and  deleted_at = 0
+
+        UNION ALL
+        SELECT
+            p.id,
+            p.code,
+            p.parent_id,
+            p.level,
+            p.create_time,
+            p.modified_time,
+            p.deleted_at
+        FROM
+            (
+                SELECT
+                    <include refid="selectColumns"/>
+                FROM
+                    <include refid="tableName"/>
+                WHERE deleted_at = 0
+            ) as p
+            INNER JOIN org_path as c ON p.id = c.parent_id
+            )
+        SELECT <include refid="selectColumns"/> FROM org_path
+    </select>
+
+    <select id="listById" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            id in
+            <foreach collection="idList" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listAll" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE level = #{level} and deleted_at = 0
+    </select>
+</mapper>

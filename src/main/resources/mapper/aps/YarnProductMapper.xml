@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.YarnProductMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.YarnProductPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="outer_id" jdbcType="VARCHAR" property="outerId"/>
+        <result column="yarn_code" jdbcType="VARCHAR" property="yarnCode"/>
+        <result column="yarn_name" jdbcType="VARCHAR" property="yarnName"/>
+        <result column="package_unit" jdbcType="VARCHAR" property="packageUnit"/>
+        <result column="batch" jdbcType="VARCHAR" property="batch"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="twist" jdbcType="VARCHAR" property="twist"/>
+        <result column="color_id" jdbcType="VARCHAR" property="colorId"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Yarn_Product</sql>
+    <sql id="insertColumns">
+        institute_id,
+        outer_id,
+        yarn_code,
+        yarn_name,
+        package_unit,
+        batch,
+        supplier_code,
+        twist,
+        color_id,
+        color,
+        description,
+        creator_id,
+        operator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        outer_id,
+        yarn_code,
+        yarn_name,
+        package_unit,
+        batch,
+        supplier_code,
+        twist,
+        color_id,
+        color,
+        description,
+        create_time,
+        modified_time,
+        creator_id,
+        operator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.YarnProductPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.outerId},
+            #{po.yarnCode},
+            #{po.yarnName},
+            #{po.packageUnit},
+            #{po.batch},
+            #{po.supplierCode},
+            #{po.twist},
+            #{po.colorId},
+            #{po.color},
+            #{po.description},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.YarnProductPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.outerId},
+                #{po.yarnCode},
+                #{po.yarnName},
+                #{po.packageUnit},
+                #{po.batch},
+                #{po.supplierCode},
+                #{po.twist},
+                #{po.colorId},
+                #{po.color},
+                #{po.description},
+                #{po.creatorId},
+                #{po.operatorId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.YarnProductPO">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            yarn_code = #{po.yarnCode},
+            yarn_name = #{po.yarnName},
+            package_unit = #{po.packageUnit},
+            batch = #{po.batch},
+            supplier_code = #{po.supplierCode},
+            twist = #{po.twist},
+            color_id = #{po.colorId},
+            color = #{po.color},
+            description = #{po.description},
+            operator_id = #{operatorId},
+            modified_time = now()
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="getById" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="getByYarnCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            yarn_code = #{yarnCode} and deleted_at = 0
+    </select>
+
+    <select id="listByYarnCodes" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            yarn_code in
+            <foreach collection="yarnCodes" item="yarnCode" open="(" separator="," close=")">
+                #{yarnCode}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listAll" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            deleted_at = 0
+    </select>
+</mapper>
+

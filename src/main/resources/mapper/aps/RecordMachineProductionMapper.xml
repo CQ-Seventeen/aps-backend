@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.RecordMachineProductionMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.RecordMachineProductionPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="factory_id" jdbcType="BIGINT" property="factoryId"/>
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="produce_order_code" jdbcType="VARCHAR" property="produceOrderCode"/>
+        <result column="sku_code" jdbcType="VARCHAR" property="skuCode"/>
+        <result column="part" jdbcType="VARCHAR" property="part"/>
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="operator_quantity" jdbcType="INTEGER" property="quantity"/>
+        <result column="operator_defects" jdbcType="INTEGER" property="defectQuantity"/>
+        <result column="inspector_quantity" jdbcType="INTEGER" property="inspectQuantity"/>
+        <result column="inspector_defects" jdbcType="INTEGER" property="inspectDefectQuantity"/>
+        <result column="bar_code" jdbcType="VARCHAR" property="barCode"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Manual_Machine_Production</sql>
+    <sql id="insertColumns">
+        institute_id,
+        factory_id,
+        task_id,
+        produce_order_code,
+        sku_code,
+        part,
+        device_id,
+        date,
+        operator_quantity,
+        operator_defects,
+        inspector_quantity,
+        inspector_defects,
+        bar_code
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        factory_id,
+        task_id,
+        produce_order_code,
+        sku_code,
+        part,
+        device_id,
+        date,
+        operator_quantity,
+        operator_defects,
+        inspector_quantity,
+        inspector_defects,
+        bar_code,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.RecordMachineProductionPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.factoryId},
+            #{po.taskId},
+            #{po.produceOrderCode},
+            #{po.skuCode},
+            #{po.part},
+            #{po.deviceId},
+            #{po.date},
+            #{po.quantity},
+            #{po.defectQuantity},
+            #{po.inspectQuantity},
+            #{po.inspectDefectQuantity},
+            #{po.barCode}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.RecordMachineProductionPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.factoryId},
+                #{po.taskId},
+                #{po.produceOrderCode},
+                #{po.skuCode},
+                #{po.part},
+                #{po.deviceId},
+                #{po.date},
+                #{po.quantity},
+                #{po.defectQuantity},
+                #{po.inspectQuantity},
+                #{po.inspectDefectQuantity},
+                #{po.barCode}
+            )
+        </foreach>
+
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.RecordMachineProductionPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            operator_quantity = #{po.quantity},
+            operator_defects = #{po.defectQuantity},
+            inspector_quantity = #{po.inspectQuantity},
+            inspector_defects = #{po.inspectDefectQuantity}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="listByFactoryAndDate" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and factory_id = #{factoryId} and date = #{date} and deleted_at = 0
+    </select>
+
+    <select id="findByRecord" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{po.instituteId} and
+            factory_id = #{po.factoryId} and
+            task_id = #{po.taskId} and
+            produce_order_code = #{po.produceOrderCode} and
+            sku_code = #{po.skuCode} and
+            part = #{po.part} and
+            device_id = #{po.deviceId} and
+            date = #{po.date} and
+            deleted_at = 0
+    </select>
+
+    <select id="listOldestSkuRecordByOrder" resultMap="result">
+        SELECT
+            a.id,
+            a.institute_id,
+            a.factory_id,
+            a.task_id,
+            a.produce_order_code,
+            a.sku_code,
+            a.part,
+            a.device_id,
+            a.date,
+            a.quantity,
+            a.create_time,
+            a.modified_time,
+            a.deleted_at
+        FROM
+            (
+            SELECT
+                <include refid="selectColumns"/>,
+                ROW_NUMBER() OVER(PARTITION BY produce_order_code, sku_code ORDER BY date ASC) as rk
+            FROM
+                <include refid="tableName"/>
+            WHERE
+                institute_id = #{instituteId} and
+                produce_order_code in
+                <foreach collection="orderCodeList" item="code" open="(" close=")" separator=",">
+                    #{code}
+                </foreach>
+            ) a
+        WHERE a.rk = 1
+    </select>
+
+    <delete id="batchDelete" parameterType="java.util.List">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+        deleted_at = UNIX_TIMESTAMP(NOW()) * 1000
+        WHERE
+        id IN
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND deleted_at = 0
+    </delete>
+
+    <select id="listByDate" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and date = #{date} and deleted_at = 0
+    </select>
+
+    <select id="listByTaskId" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and task_id = #{taskId} and deleted_at = 0
+    </select>
+
+    <select id="findByBarCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and bar_code = #{barCode} and deleted_at = 0
+    </select>
+</mapper>

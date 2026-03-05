@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.MachineAttrConfigMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.MachineAttrConfigPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="attr_code" jdbcType="VARCHAR" property="attrCode"/>
+        <result column="optional_values" jdbcType="VARCHAR" property="optionalValues"/>
+        <result column="option_type" jdbcType="TINYINT" property="optionType"/>
+        <result column="use_to_filter" jdbcType="TINYINT" property="useToFilter"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Machine_Attr_Config</sql>
+    <sql id="insertColumns">
+        institute_id,
+        attr_code,
+        optional_values,
+        option_type,
+        use_to_filter,
+        creator_id,
+        operator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        attr_code,
+        optional_values,
+        option_type,
+        use_to_filter,
+        create_time,
+        modified_time,
+        creator_id,
+        operator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.MachineAttrConfigPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.attrCode},
+            #{po.optionalValues},
+            #{po.optionType},
+            #{po.useToFilter},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.MachineAttrConfigPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+        (
+            #{po.instituteId},
+            #{po.attrCode},
+            #{po.optionalValues},
+            #{po.optionType},
+            #{po.useToFilter},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+        </foreach>
+
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.MachineAttrConfigPO">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            optional_values = #{po.optionalValues},
+            option_type = #{po.optionType},
+            use_to_filter = #{po.useToFilter},
+            operator_id = #{operatorId}
+        WHERE
+            institute_id = #{po.instituteId} and attr_code = #{po.attrCode} and deleted_at = 0
+    </update>
+
+    <select id="getByAttrCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and attr_code = #{attrCode} and deleted_at = 0
+    </select>
+
+    <select id="listByCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and attr_code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listAll" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and deleted_at = 0
+    </select>
+
+    <select id="listFilterAttr" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and use_to_filter = 1 and deleted_at = 0
+    </select>
+</mapper>

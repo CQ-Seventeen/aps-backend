@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.TaskSegmentMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="planned_quantity" jdbcType="INTEGER" property="plannedQuantity"/>
+        <result column="plan_start_time" jdbcType="TIMESTAMP" property="planStartTime"/>
+        <result column="plan_end_time" jdbcType="TIMESTAMP" property="planEndTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="sort_index" jdbcType="INTEGER" property="sortIndex"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Task_Segment</sql>
+    <sql id="insertColumns">
+        task_id,
+        planned_quantity,
+        plan_start_time,
+        plan_end_time,
+        status,
+        sort_index,
+        creator_id,
+        operator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        task_id,
+        planned_quantity,
+        plan_start_time,
+        plan_end_time,
+        status,
+        sort_index,
+        create_time,
+        modified_time,
+        creator_id,
+        operator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+        <include refid="insertColumns"/>
+        ) VALUES
+        (
+            #{po.taskId},
+            #{po.plannedQuantity},
+            #{po.planStartTime},
+            #{po.planEndTime},
+            #{po.status},
+            #{po.sortIndex},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+        <include refid="insertColumns"/>
+        ) VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.taskId},
+                #{po.plannedQuantity},
+                #{po.planStartTime},
+                #{po.planEndTime},
+                #{po.status},
+                #{po.sortIndex},
+                #{po.creatorId},
+                #{po.operatorId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            planned_quantity = #{po.plannedQuantity},
+            plan_start_time = #{po.planStartTime},
+            plan_end_time = #{po.planEndTime},
+            status = #{po.status},
+            sort_index = #{po.sortIndex},
+            operator_id = #{operatorId}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <update id="batchUpdate" parameterType="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO">
+        <foreach collection="poList" item="po" separator=";">
+            UPDATE
+            <include refid="tableName"/>
+            SET
+            planned_quantity = #{po.plannedQuantity},
+            plan_start_time = #{po.planStartTime},
+            plan_end_time = #{po.planEndTime},
+            status = #{po.status},
+            sort_index = #{po.sortIndex},
+            operator_id = #{operatorId}
+            WHERE
+            id = #{po.id} and deleted_at = 0
+        </foreach>
+    </update>
+
+    <update id="delete" parameterType="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            deleted_at = unix_timestamp(now()),
+            operator_id = #{operatorId}
+        WHERE
+            id = #{id} and deleted_at = 0
+    </update>
+
+    <update id="batchDelete" parameterType="com.santoni.iot.aps.infrastructure.po.TaskSegmentPO">
+        <foreach collection="idList" item="id" separator=";">
+            UPDATE
+            <include refid="tableName"/>
+            SET
+                deleted_at = unix_timestamp(now()),
+                operator_id = #{operatorId}
+            WHERE
+                id = #{id} and deleted_at = 0
+        </foreach>
+    </update>
+
+    <select id="getById" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="listByTaskId" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            task_id = #{taskId} and deleted_at = 0
+    </select>
+
+    <select id="listByTaskIdList" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            task_id in 
+            <foreach collection="taskIdList" item="taskId" separator="," open="(" close=")">
+                #{taskId}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+</mapper>

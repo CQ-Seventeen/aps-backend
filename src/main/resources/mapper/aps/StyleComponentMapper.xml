@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.StyleComponentMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.StyleComponentPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="produce_order_code" jdbcType="VARCHAR" property="produceOrderCode"/>
+        <result column="sku_code" jdbcType="VARCHAR" property="skuCode"/>
+        <result column="part_id" jdbcType="VARCHAR" property="partId"/>
+        <result column="part" jdbcType="VARCHAR" property="part"/>
+        <result column="color_id" jdbcType="VARCHAR" property="colorId"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="program_file" jdbcType="VARCHAR" property="programFile"/>
+        <result column="number" jdbcType="INTEGER" property="number"/>
+        <result column="ratio" jdbcType="INTEGER" property="ratio"/>
+        <result column="cylinder_diameter" jdbcType="INTEGER" property="cylinderDiameter"/>
+        <result column="needle_spacing" jdbcType="INTEGER" property="needleSpacing"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="expected_produce_time" jdbcType="DECIMAL" property="expectedProduceTime"/>
+        <result column="expected_weight" jdbcType="DECIMAL" property="expectedWeight"/>
+        <result column="standard_number" jdbcType="INTEGER" property="standardNumber"/>
+        <result column="machine_requirement" jdbcType="VARCHAR" property="machineRequirement"/>
+        <result column="default_efficiency" jdbcType="DECIMAL" property="defaultEfficiency"/>
+        <result column="actual_efficiency" jdbcType="DECIMAL" property="actualEfficiency"/>
+        <result column="yarn_usage" jdbcType="VARCHAR" property="yarnUsage"/>
+        <result column="finish_width" jdbcType="DECIMAL" property="finishWidth"/>
+        <result column="finish_length" jdbcType="DECIMAL" property="finishLength"/>
+        <result column="waste_rate" jdbcType="DECIMAL" property="wasteRate"/>
+        <result column="dye" jdbcType="VARCHAR" property="dye"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Style_Component</sql>
+    <sql id="insertColumns">
+        institute_id,
+        produce_order_code,
+        sku_code,
+        part_id,
+        part,
+        color_id,
+        color,
+        type,
+        program_file,
+        number,
+        ratio,
+        cylinder_diameter,
+        needle_spacing,
+        description,
+        expected_produce_time,
+        expected_weight,
+        standard_number,
+        machine_requirement,
+        default_efficiency,
+        actual_efficiency,
+        yarn_usage,
+        finish_width,
+        finish_length,
+        waste_rate,
+        dye
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        produce_order_code,
+        sku_code,
+        part_id,
+        part,
+        color_id,
+        color,
+        type,
+        program_file,
+        number,
+        ratio,
+        cylinder_diameter,
+        needle_spacing,
+        description,
+        expected_produce_time,
+        expected_weight,
+        standard_number,
+        machine_requirement,
+        default_efficiency,
+        actual_efficiency,
+        yarn_usage,
+        finish_width,
+        finish_length,
+        waste_rate,
+        dye,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.StyleComponentPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.produceOrderCode},
+            #{po.skuCode},
+            #{po.partId},
+            #{po.part},
+            #{po.colorId},
+            #{po.color},
+            #{po.type},
+            #{po.programFile},
+            #{po.number},
+            #{po.ratio},
+            #{po.cylinderDiameter},
+            #{po.needleSpacing},
+            #{po.description},
+            #{po.expectedProduceTime},
+            #{po.expectedWeight},
+            #{po.standardNumber},
+            #{po.machineRequirement},
+            #{po.defaultEfficiency},
+            #{po.actualEfficiency},
+            #{po.yarnUsage},
+            #{po.finishWidth},
+            #{po.finishLength},
+            #{po.wasteRate},
+            #{po.dye}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.StyleComponentPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+            <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.produceOrderCode},
+                #{po.skuCode},
+                #{po.partId},
+                #{po.part},
+                #{po.colorId},
+                #{po.color},
+                #{po.type},
+                #{po.programFile},
+                #{po.number},
+                #{po.ratio},
+                #{po.cylinderDiameter},
+                #{po.needleSpacing},
+                #{po.description},
+                #{po.expectedProduceTime},
+                #{po.expectedWeight},
+                #{po.standardNumber},
+                #{po.machineRequirement},
+                #{po.defaultEfficiency},
+                #{po.actualEfficiency},
+                #{po.yarnUsage},
+                #{po.finishWidth},
+                #{po.finishLength},
+                #{po.wasteRate},
+                #{po.dye}
+            )
+            </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.StyleComponentPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            program_file = #{po.programFile},
+            type = #{po.type},
+            number = #{po.number},
+            ratio = #{po.ratio},
+            cylinder_diameter = #{po.cylinderDiameter},
+            needle_spacing = #{po.needleSpacing},
+            description = #{po.description},
+            expected_produce_time = #{po.expectedProduceTime},
+            machine_requirement = #{po.machineRequirement},
+            expected_weight = #{po.expectedWeight},
+            standard_number = #{po.standardNumber},
+            default_efficiency = #{po.defaultEfficiency},
+            actual_efficiency = #{po.actualEfficiency},
+            yarn_usage = #{po.yarnUsage},
+            finish_width = #{po.finishWidth},
+            finish_length = #{po.finishLength},
+            waste_rate = #{po.wasteRate},
+            dye = #{po.dye}
+        WHERE
+            institute_id = #{po.instituteId} and
+            produce_order_code = #{po.produceOrderCode} and
+            sku_code = #{po.skuCode} and
+            part = #{po.part} and
+            deleted_at = 0
+    </update>
+
+    <update id="delete" parameterType="com.santoni.iot.aps.infrastructure.po.StyleComponentPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            deleted_at = unix_timestamp(now())
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <update id="deleteBySkuCode">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            deleted_at = unix_timestamp(now())
+        WHERE
+            institute_id = #{instituteId} and sku_code = #{skuCode} and deleted_at = 0
+    </update>
+
+    <select id="findBySkuCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and sku_code = #{skuCode} and deleted_at = 0
+    </select>
+
+    <select id="listBySkuCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            sku_code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="getBySkuCodeAndPart" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and sku_code = #{skuCode} and part = #{part} and deleted_at = 0
+    </select>
+
+    <select id="getByOrderAndSkuCodeAndPart" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and produce_order_code = #{orderCode} and sku_code = #{skuCode} and part = #{part} and deleted_at = 0
+    </select>
+
+    <select id="listBySkuAndPartPair" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId}
+            and (sku_code, part) in
+            <foreach collection="pairList" item="pair" open="(" separator="," close=")">
+                (#{pair.skuCode}, #{pair.part})
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listByOrderAndSkuCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and produce_order_code = #{orderCode} and sku_code = #{skuCode} and deleted_at = 0
+    </select>
+
+    <select id="listByOrderAndSkuCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId}
+            and produce_order_code = #{orderCode}
+            and sku_code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach> and deleted_at = 0
+    </select>
+</mapper>

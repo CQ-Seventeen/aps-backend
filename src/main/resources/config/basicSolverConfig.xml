@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver xmlns="https://timefold.ai/xsd/solver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://timefold.ai/xsd/solver https://timefold.ai/xsd/solver/solver.xsd">
+    <!-- Define the model -->
+    <solutionClass>com.santoni.iot.aps.domain.schedule.solver.or.solution.ORSolution</solutionClass>
+    <entityClass>com.santoni.iot.aps.domain.schedule.solver.or.entity.WeavingTaskAssign</entityClass>
+
+    <!-- Define the score function -->
+    <scoreDirectorFactory>
+        <constraintProviderClass>com.santoni.iot.aps.domain.schedule.solver.or.constraint.ConstraintProvider</constraintProviderClass>
+    </scoreDirectorFactory>
+
+    <termination>
+        <minutesSpentLimit>10</minutesSpentLimit>
+    </termination>
+
+<!--    <constructionHeuristic>-->
+<!--        <constructionHeuristicType>STRONGEST_FIT</constructionHeuristicType>-->
+<!--    </constructionHeuristic>-->
+
+<!--    <localSearch>-->
+<!--        <localSearchType>SIMULATED_ANNEALING</localSearchType>-->
+<!--    </localSearch>-->
+
+</solver>

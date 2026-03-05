@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.ScheduleTaskMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.ScheduleTaskPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="machine_ids" jdbcType="VARCHAR" property="machineIds"/>
+        <result column="style_demands" jdbcType="VARCHAR" property="styleDemands"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="schedule_result" jdbcType="VARCHAR" property="scheduleResult"/>
+        <result column="begin_process_time" jdbcType="TIMESTAMP" property="beginProcessTime"/>
+        <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Schedule_Task</sql>
+    <sql id="insertColumns">
+        institute_id,
+        machine_ids,
+        style_demands,
+        start_time,
+        end_time,
+        status,
+        creator_id,
+        operator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        machine_ids,
+        style_demands,
+        start_time,
+        end_time,
+        status,
+        schedule_result,
+        begin_process_time,
+        finish_time,
+        create_time,
+        modified_time,
+        creator_id,
+        operator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.ScheduleTaskPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.machineIds},
+            #{po.styleDemands},
+            #{po.startTime},
+            #{po.endTime},
+            #{po.status},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.ScheduleTaskPO">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            status = #{po.status},
+            schedule_result = #{po.scheduleResult},
+            begin_process_time = #{po.beginProcessTime},
+            finish_time = #{po.finishTime}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <update id="delete">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            deleted_at = unix_timestamp(now()),
+            operator_id = #{operatorId}
+        WHERE
+            id = #{id} and deleted_at = 0
+    </update>
+
+    <select id="getById" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="listByTaskIdList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            id in
+            <foreach collection="taskIdList" item="taskId" separator="," open="(" close=")">
+                #{taskId}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listByStatus" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            status in
+            <foreach collection="statusList" item="status" separator="," open="(" close=")">
+                #{status}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="searchScheduleTask" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and deleted_at = 0
+            <if test="qo.statusList != null and qo.statusList.machineSize > 0">
+                and status in
+                <foreach collection="qo.statusList" item = "status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

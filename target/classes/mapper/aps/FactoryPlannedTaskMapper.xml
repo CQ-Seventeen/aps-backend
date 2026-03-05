@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.FactoryPlannedTaskMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="produce_order_id" jdbcType="BIGINT" property="produceOrderId"/>
+        <result column="produce_order_code" jdbcType="VARCHAR" property="produceOrderCode"/>
+        <result column="factory_id" jdbcType="BIGINT" property="factoryId"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="plan_start_time" jdbcType="TIMESTAMP" property="planStartTime"/>
+        <result column="plan_end_time" jdbcType="TIMESTAMP" property="planEndTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Factory_Planned_Task</sql>
+    <sql id="insertColumns">
+        institute_id,
+        produce_order_id,
+        produce_order_code,
+        factory_id,
+        type,
+        plan_start_time,
+        plan_end_time,
+        status,
+        creator_id,
+        operator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        produce_order_id,
+        produce_order_code,
+        factory_id,
+        type,
+        plan_start_time,
+        plan_end_time,
+        status,
+        create_time,
+        modified_time,
+        creator_id,
+        operator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.produceOrderId},
+            #{po.produceOrderCode},
+            #{po.factoryId},
+            #{po.type},
+            #{po.planStartTime},
+            #{po.planEndTime},
+            #{po.status},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.produceOrderId},
+                #{po.produceOrderCode},
+                #{po.factoryId},
+                #{po.type},
+                #{po.planStartTime},
+                #{po.planEndTime},
+                #{po.status},
+                #{po.creatorId},
+                #{po.operatorId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            plan_start_time = #{po.planStartTime},
+            plan_end_time = #{po.planEndTime},
+            operator_id = #{operatorId}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="getById" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="listByFactoryId" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE factory_id = #{factoryId} and deleted_at = 0
+            <if test="starTime != null">
+                AND plan_end_time &gt;= #{starTime}
+            </if>
+            <if test="endTime != null">
+                AND plan_start_time &lt;= #{endTime}
+            </if>
+    </select>
+
+    <select id="listByFactoryIdList" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            factory_id in
+            <foreach collection="factoryIds" item="factoryId" open="(" separator="," close=")">
+                #{factoryId}
+            </foreach>
+            and deleted_at = 0
+            <if test="starTime != null">
+                AND plan_end_time &gt;= #{starTime}
+            </if>
+            <if test="endTime != null">
+                AND plan_start_time &lt;= #{endTime}
+            </if>
+    </select>
+
+    <select id="listByOrderId" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            produce_order_id = #{orderId} and deleted_at = 0
+    </select>
+
+    <select id="listByOrderIdList" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            produce_order_id in
+            <foreach collection="orderIds" item='orderId' open="(" separator="," close=")">
+                #{orderId}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listByIds" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="listByStatus" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and
+            status in
+            <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="listByFactoryAndStatus" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE factory_id = #{factoryId} and
+            status in
+            <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach> and deleted_at = 0
+    </select>
+</mapper>

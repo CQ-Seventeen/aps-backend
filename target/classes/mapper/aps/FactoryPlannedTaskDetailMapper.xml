@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.FactoryPlannedTaskDetailMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskDetailPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="machine_number" jdbcType="INTEGER" property="machineNumber"/>
+        <result column="occupied_days" jdbcType="DECIMAL" property="occupiedDays"/>
+        <result column="cylinder_diameter" jdbcType="INTEGER" property="cylinderDiameter"/>
+        <result column="plan_start_time" jdbcType="TIMESTAMP" property="planStartTime"/>
+        <result column="plan_end_time" jdbcType="TIMESTAMP" property="planEndTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Factory_Planned_Task_Detail</sql>
+    <sql id="insertColumns">
+        task_id,
+        machine_number,
+        occupied_days,
+        cylinder_diameter,
+        plan_start_time,
+        plan_end_time
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        task_id,
+        machine_number,
+        occupied_days,
+        cylinder_diameter,
+        plan_start_time,
+        plan_end_time,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskDetailPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.taskId},
+            #{po.machineNumber},
+            #{po.occupiedDays},
+            #{po.cylinderDiameter},
+            #{po.planStartTime},
+            #{po.planEndTime}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskDetailPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.taskId},
+                #{po.machineNumber},
+                #{po.occupiedDays},
+                #{po.cylinderDiameter},
+                #{po.planStartTime},
+                #{po.planEndTime}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.FactoryPlannedTaskDetailPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            machine_number = #{po.machineNumber},
+            occupied_days = #{po.occupiedDays},
+            plan_start_time = #{po.planStartTime},
+            plan_end_time = #{po.planEndTime}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="listByTaskId" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            task_id = #{taskId} and deleted_at = 0
+    </select>
+
+    <select id="listByTaskIds" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            task_id in
+            <foreach collection="taskIds" item='taskId' open="(" separator="," close=")">
+                #{taskId}
+            </foreach>
+            and deleted_at = 0
+    </select>
+</mapper>

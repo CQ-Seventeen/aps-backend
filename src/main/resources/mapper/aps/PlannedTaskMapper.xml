@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.PlannedTaskMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.PlannedTaskPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="task_code" jdbcType="VARCHAR" property="taskCode"/>
+        <result column="factory_id" jdbcType="BIGINT" property="factoryId"/>
+        <result column="produce_order_code" jdbcType="VARCHAR" property="produceOrderCode"/>
+        <result column="weaving_part_order_id" jdbcType="VARCHAR" property="weavingPartOrderId"/>
+        <result column="machine_id" jdbcType="BIGINT" property="machineId"/>
+        <result column="style_code" jdbcType="VARCHAR" property="styleCode"/>
+        <result column="symbol_id" jdbcType="VARCHAR" property="symbolId"/>
+        <result column="symbol" jdbcType="VARCHAR" property="symbol"/>
+        <result column="size_id" jdbcType="VARCHAR" property="sizeId"/>
+        <result column="size" jdbcType="VARCHAR" property="size"/>
+        <result column="sku_code" jdbcType="VARCHAR" property="skuCode"/>
+        <result column="part_id" jdbcType="VARCHAR" property="partId"/>
+        <result column="part" jdbcType="VARCHAR" property="part"/>
+        <result column="color_id" jdbcType="VARCHAR" property="colorId"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
+        <result column="produced_quantity" jdbcType="INTEGER" property="producedQuantity"/>
+        <result column="planned_quantity" jdbcType="INTEGER" property="plannedQuantity"/>
+        <result column="plan_start_time" jdbcType="TIMESTAMP" property="planStartTime"/>
+        <result column="plan_end_time" jdbcType="TIMESTAMP" property="planEndTime"/>
+        <result column="actual_start_time" jdbcType="TIMESTAMP" property="actualStartTime"/>
+        <result column="actual_end_time" jdbcType="TIMESTAMP" property="actualEndTime"/>
+        <result column="estimate_end_time" jdbcType="TIMESTAMP" property="estimateEndTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="flag" jdbcType="VARCHAR" property="flag"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Planned_Task</sql>
+    <sql id="insertColumns">
+        institute_id,
+        task_code,
+        factory_id,
+        produce_order_code,
+        weaving_part_order_id,
+        machine_id,
+        style_code,
+        symbol_id,
+        symbol,
+        size_id,
+        size,
+        sku_code,
+        part_id,
+        part,
+        color_id,
+        color,
+        produced_quantity,
+        planned_quantity,
+        plan_start_time,
+        plan_end_time,
+        actual_start_time,
+        actual_end_time,
+        estimate_end_time,
+        status,
+        flag,
+        creator_id,
+        operator_id
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        task_code,
+        factory_id,
+        produce_order_code,
+        weaving_part_order_id,
+        machine_id,
+        style_code,
+        symbol_id,
+        symbol,
+        size_id,
+        size,
+        sku_code,
+        part_id,
+        part,
+        color_id,
+        color,
+        produced_quantity,
+        planned_quantity,
+        plan_start_time,
+        plan_end_time,
+        actual_start_time,
+        actual_end_time,
+        estimate_end_time,
+        status,
+        flag,
+        create_time,
+        modified_time,
+        creator_id,
+        operator_id,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.PlannedTaskPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.taskCode},
+            #{po.factoryId},
+            #{po.produceOrderCode},
+            #{po.weavingPartOrderId},
+            #{po.machineId},
+            #{po.styleCode},
+            #{po.symbolId},
+            #{po.symbol},
+            #{po.sizeId},
+            #{po.size},
+            #{po.skuCode},
+            #{po.partId},
+            #{po.part},
+            #{po.colorId},
+            #{po.color},
+            #{po.producedQuantity},
+            #{po.plannedQuantity},
+            #{po.planStartTime},
+            #{po.planEndTime},
+            #{po.actualStartTime},
+            #{po.actualEndTime},
+            #{po.estimateEndTime},
+            #{po.status},
+            #{po.flag},
+            #{po.creatorId},
+            #{po.operatorId}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.PlannedTaskPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.taskCode},
+                #{po.factoryId},
+                #{po.produceOrderCode},
+                #{po.weavingPartOrderId},
+                #{po.machineId},
+                #{po.styleCode},
+                #{po.symbolId},
+                #{po.symbol},
+                #{po.sizeId},
+                #{po.size},
+                #{po.skuCode},
+                #{po.partId},
+                #{po.part},
+                #{po.colorId},
+                #{po.color},
+                #{po.producedQuantity},
+                #{po.plannedQuantity},
+                #{po.planStartTime},
+                #{po.planEndTime},
+                #{po.actualStartTime},
+                #{po.actualEndTime},
+                #{po.estimateEndTime},
+                #{po.status},
+                #{po.flag},
+                #{po.creatorId},
+                #{po.operatorId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.PlannedTaskPO">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            produced_quantity = #{po.producedQuantity},
+            planned_quantity = #{po.plannedQuantity},
+            plan_start_time = #{po.planStartTime},
+            plan_end_time = #{po.planEndTime},
+            actual_start_time = #{po.actualStartTime},
+            actual_end_time = #{po.actualEndTime},
+            estimate_end_time = #{po.estimateEndTime},
+            operator_id = #{operatorId},
+            status = #{po.status},
+            flag = #{po.flag}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <update id="updateStatus">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            status = #{curStatus}
+        WHERE
+            id = #{id} and status = #{prevStatus} and deleted_at = 0
+    </update>
+
+    <select id="getById" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="listByMachineId" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            machine_id = #{machineId} and deleted_at = 0
+            <if test="starTime != null">
+                AND plan_end_time &gt;= #{starTime}
+            </if>
+            <if test="endTime != null">
+                AND plan_start_time &lt;= #{endTime}
+            </if>
+            and status != 4
+    </select>
+
+    <select id="listByMachineIdList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            machine_id in
+            <foreach collection="machineIds" item="machineId" open="(" separator="," close=")">
+                #{machineId}
+            </foreach>
+            and deleted_at = 0
+            <if test="starTime != null">
+                AND plan_end_time &gt;= #{starTime}
+            </if>
+            <if test="endTime != null">
+                AND plan_start_time &lt;= #{endTime}
+            </if>
+            and status != 4
+    </select>
+
+    <select id="listByWeavingPartOrderId" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            weaving_part_order_id = #{weavingPartOrderId} and deleted_at = 0 and status != 4
+    </select>
+
+    <select id="listByWeavingPartOrderIds" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+            weaving_part_order_id in
+            <foreach collection="weavingPartOrderIds" item='weavingPartOrderId' open="(" separator="," close=")">
+                #{weavingPartOrderId}
+            </foreach>
+            and deleted_at = 0 and status != 4
+    </select>
+
+    <select id="listByIds" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="searchTask" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE deleted_at = 0
+            <if test="qo.factoryId != null and qo.factoryId > 0">
+                and factory_id = #{qo.factoryId}
+            </if>
+            <if test="qo.styleCode != null and qo.styleCode != ''">
+                AND style_code like '%${qo.styleCode}%'
+            </if>
+            <if test="qo.produceOrderCode != null and qo.produceOrderCode != ''">
+                AND produce_order_code like '%${qo.produceOrderCode}%'
+            </if>
+            <if test="qo.startTime != null">
+                AND plan_end_time &gt;= #{qo.startTime}
+            </if>
+            <if test="qo.endTime != null">
+                AND plan_start_time &lt;= #{qo.endTime}
+            </if>
+            ORDER BY create_time desc
+    </select>
+
+    <select id="listByMachineAndEndTime" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE deleted_at = 0 and
+            machine_id in
+            <foreach collection="machineIds" item="machineId" open="(" separator="," close=")">
+                #{machineId}
+            </foreach> AND plan_end_time &gt;= #{endTimeStart} AND plan_end_time &lt;= #{endTimeEnd}
+            and status != 4
+    </select>
+
+    <select id="listByStatus" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE deleted_at = 0 and
+            status in
+            <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+    </select>
+
+    <select id="listByFactoryIdAndStatus" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE factory_id = #{factoryId} and deleted_at = 0 and
+            status in
+            <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+    </select>
+
+    <select id="listByProduceOrderCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE produce_order_code in
+            <foreach collection="orderCodeList" item='orderCode' open="(" separator="," close=")">
+                #{orderCode}
+            </foreach>
+            and deleted_at = 0 and status != 4
+    </select>
+
+    <select id="listByTime" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE deleted_at = 0 AND plan_end_time &gt;= #{startTime} AND plan_start_time &lt;= #{endTime} and status != 4
+    </select>
+
+    <select id="find" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE deleted_at = 0
+            and produce_order_code = #{orderCode}
+            and style_code = #{styLeCode}
+            and size = #{size}
+            and part = #{part}
+    </select>
+</mapper>

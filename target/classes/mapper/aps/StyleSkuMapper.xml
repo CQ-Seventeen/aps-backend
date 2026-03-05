@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.StyleSkuMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.StyleSkuPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="produce_order_code" jdbcType="VARCHAR" property="produceOrderCode"/>
+        <result column="style_code" jdbcType="VARCHAR" property="styleCode"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="size_id" jdbcType="VARCHAR" property="sizeId"/>
+        <result column="size" jdbcType="VARCHAR" property="size"/>
+        <result column="expected_produce_time" jdbcType="VARCHAR" property="expectedProduceTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Style_Sku</sql>
+    <sql id="insertColumns">
+        institute_id,
+        produce_order_code,
+        style_code,
+        code,
+        size_id,
+        size,
+        expected_produce_time
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        produce_order_code,
+        style_code,
+        code,
+        size_id,
+        size,
+        expected_produce_time,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.StyleSkuPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.produceOrderCode},
+            #{po.styleCode},
+            #{po.code},
+            #{po.sizeId},
+            #{po.size},
+            #{po.expectedProduceTime}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.StyleSkuPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+            <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.produceOrderCode},
+                #{po.styleCode},
+                #{po.code},
+                #{po.sizeId},
+                #{po.size},
+                #{po.expectedProduceTime}
+            )
+            </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.StyleSkuPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            expected_produce_time = #{po.expectedProduceTime}
+        WHERE
+            institute_id = #{po.instituteId} and code = #{po.code} and deleted_at = 0
+    </update>
+
+    <update id="delete" parameterType="com.santoni.iot.aps.infrastructure.po.StyleComponentPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            deleted_at = unix_timestamp(now())
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="findByStyleCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and style_code = #{styleCode} and deleted_at = 0
+    </select>
+
+    <select id="listByStyleCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and
+            style_code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="findBySkuCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and code = #{skuCode} and deleted_at = 0
+    </select>
+
+    <select id="findByOrderAndCode" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        institute_id = #{instituteId} and produce_order_code = #{orderCode} and code = #{skuCode} and deleted_at = 0
+    </select>
+
+    <select id="listBySkuCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and
+            code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="listByOrderAndSkuCode" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and produce_order_code = #{orderCode}  and
+            code in
+            <foreach collection="codeList" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="findByStyleAndSize" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and style_code = #{styleCode} and size = #{size} and deleted_at = 0
+    </select>
+
+    <select id="listByOrderCodeList" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE institute_id = #{instituteId}
+            and produce_order_code in
+            <foreach collection="orderCodeList" item="orderCode" open="(" separator="," close=")">
+                #{orderCode}
+            </foreach> and deleted_at = 0
+    </select>
+</mapper>

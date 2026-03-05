@@ -1,0 +1,63 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+  datasource:
+    aps:
+      jdbc-url: jdbc:mysql://127.0.0.1:3326/aps?useSSL=false&useUnicode=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+      username: admin
+      password: EdqY6DkH5gFJGId
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        maximum-pool-size: 15
+        auto-commit: true
+        pool-name: HikariCP
+        max-lifetime: 1800000
+        connection-test-query: SELECT 1
+        connection-timeout: 60000
+        validation-timeout: 30000
+        idle-timeout: 60000
+        login-timeout: 5
+        minimum-idle: 60000
+        read-only: false
+    mes:
+      jdbc-url: jdbc:mysql://127.0.0.1:3326/mes_resource?useSSL=false&useUnicode=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+      username: admin
+      password: EdqY6DkH5gFJGId
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        maximum-pool-size: 15
+        auto-commit: true
+        pool-name: HikariCP
+        max-lifetime: 1800000
+        connection-test-query: SELECT 1
+        connection-timeout: 60000
+        validation-timeout: 30000
+        idle-timeout: 60000
+        login-timeout: 5
+        minimum-idle: 60000
+        read-only: false
+
+logging:
+  level:
+    ai:
+      timefold:
+        solver: debug
+
+minio:
+  address: http://127.0.0.1:30007
+  user: santoniadmin
+  password: santoni@2022
+  openBucket: oss-test-files
+  download: https://oss.knittingplatform.com
+
+feign:
+  tp-erp-service:
+    url: 172.16.6.223:8084

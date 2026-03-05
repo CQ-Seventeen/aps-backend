@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.ProductionSummaryMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.ProductionSummaryPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="factory_id" jdbcType="BIGINT" property="factoryId"/>
+        <result column="sum_key" jdbcType="VARCHAR" property="sumKey"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="quantity" jdbcType="INTEGER" property="quantity"/>
+        <result column="td_quantity" jdbcType="INTEGER" property="tdQuantity"/>
+        <result column="defect_quantity" jdbcType="INTEGER" property="defectQuantity"/>
+        <result column="td_defect_quantity" jdbcType="INTEGER" property="tdDefectQuantity"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+    </resultMap>
+
+    <sql id="tableName">Production_Summary</sql>
+    <sql id="insertColumns">
+        institute_id,
+        factory_id,
+        sum_key,
+        type,
+        date,
+        quantity,
+        td_quantity,
+        defect_quantity,
+        td_defect_quantity
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        factory_id,
+        sum_key,
+        type,
+        date,
+        quantity,
+        td_quantity,
+        defect_quantity,
+        td_defect_quantity,
+        create_time,
+        modified_time
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.ProductionSummaryPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.factoryId},
+            #{po.sumKey},
+            #{po.type},
+            #{po.date},
+            #{po.quantity},
+            #{po.tdQuantity},
+            #{po.defectQuantity},
+            #{po.tdDefectQuantity}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.ProductionSummaryPO">
+        INSERT INTO
+            <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+        (
+            #{po.instituteId},
+            #{po.factoryId},
+            #{po.sumKey},
+            #{po.type},
+            #{po.date},
+            #{po.quantity},
+            #{po.tdQuantity},
+            #{po.defectQuantity},
+            #{po.tdDefectQuantity}
+        )
+        </foreach>
+
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.ProductionSummaryPO">
+        UPDATE
+            <include refid="tableName"/>
+        SET
+            quantity = #{po.quantity},
+            td_quantity = #{po.tdQuantity},
+            defect_quantity = #{po.defectQuantity},
+            td_defect_quantity = #{po.tdDefectQuantity}
+        WHERE
+            id = #{po.id}
+    </update>
+
+    <select id="findByFactoryAndKeyAndDate" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            factory_id = #{factoryId} and
+            date = #{date} and
+            sum_key = #{summaryKey} and
+            type = #{type}
+    </select>
+
+    <select id="findLatestByFactoryAndKey" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            factory_id = #{factoryId} and
+            sum_key = #{summaryKey} and
+            type = #{type}
+        ORDER BY date desc
+        LIMIT 1
+    </select>
+
+    <select id="listByFactoryAndKeyAndDate" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            factory_id = #{factoryId} and
+            date = #{date} and
+            type = #{type} and
+            sum_key in
+            <foreach collection="keyList" item="key" open="(" separator="," close=")">
+                #{key}
+            </foreach>
+    </select>
+
+    <select id="listLatestByFactoryAndKeyList" resultMap="result">
+        SELECT
+            a.id,
+            a.institute_id,
+            a.factory_id,
+            a.sum_key,
+            a.type,
+            a.date,
+            a.quantity,
+            a.td_quantity,
+            a.defect_quantity,
+            a.td_defect_quantity,
+            a.create_time,
+            a.modified_time
+        FROM
+        (
+            SELECT
+                <include refid="selectColumns"/>,
+                ROW_NUMBER() OVER(PARTITION BY sum_key ORDER BY date DESC) as rk
+            FROM
+                <include refid="tableName"/>
+            WHERE
+                institute_id = #{instituteId} and
+                factory_id = #{factoryId} and
+                type = #{type} and
+                sum_key in
+                <foreach collection="keyList" item="key" open="(" close=")" separator=",">
+                    #{key}
+                </foreach>
+        ) a
+        WHERE a.rk = 1
+    </select>
+
+    <select id="listByFactoryAndKeyTypeAndDate" resultMap="result">
+        SELECT
+            a.id,
+            a.institute_id,
+            a.factory_id,
+            a.sum_key,
+            a.type,
+            a.date,
+            a.quantity,
+            a.td_quantity,
+            a.defect_quantity,
+            a.td_defect_quantity,
+            a.create_time,
+            a.modified_time
+        FROM
+            (
+            SELECT
+                <include refid="selectColumns"/>,
+                ROW_NUMBER() OVER(PARTITION BY factory_id, sum_key ORDER BY date DESC) as rk
+            FROM
+                <include refid="tableName"/>
+            WHERE
+                institute_id = #{instituteId} and
+                factory_id = #{factoryId} and
+                type = #{type} and
+                date &lt;= #{date}
+            ) a
+        WHERE a.rk = 1
+    </select>
+
+    <select id="listLatestByKeyList" resultMap="result">
+        SELECT
+            a.id,
+            a.institute_id,
+            a.factory_id,
+            a.sum_key,
+            a.type,
+            a.date,
+            a.quantity,
+            a.td_quantity,
+            a.defect_quantity,
+            a.td_defect_quantity,
+            a.create_time,
+            a.modified_time
+        FROM
+            (
+            SELECT
+                <include refid="selectColumns"/>,
+                ROW_NUMBER() OVER(PARTITION BY factory_id, sum_key ORDER BY date DESC) as rk
+            FROM
+                <include refid="tableName"/>
+            WHERE
+                institute_id = #{instituteId} and
+                type = #{type} and
+                sum_key in
+                <foreach collection="keyList" item="key" open="(" close=")" separator=",">
+                    #{key}
+                </foreach>
+            ) a
+        WHERE a.rk = 1
+    </select>
+
+    <select id="listByKeyTypeAndDate" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            date = #{date} and
+            type = #{type}
+    </select>
+
+    <select id="listByKeyListAndDate" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            institute_id = #{instituteId} and
+            date = #{date} and
+            sum_key in
+            <foreach collection="keyList" item="key" open="(" close=")" separator=",">
+                #{key}
+            </foreach>
+    </select>
+
+    <select id="listLatestByKeyListAndDate" resultMap="result">
+        SELECT
+            a.id,
+            a.institute_id,
+            a.factory_id,
+            a.sum_key,
+            a.type,
+            a.date,
+            a.quantity,
+            a.td_quantity,
+            a.defect_quantity,
+            a.td_defect_quantity,
+            a.create_time,
+            a.modified_time
+        FROM
+            (
+            SELECT
+                <include refid="selectColumns"/>,
+                ROW_NUMBER() OVER(PARTITION BY sum_key ORDER BY date DESC) as rk
+            FROM
+                <include refid="tableName"/>
+            WHERE
+                institute_id = #{instituteId} and
+                date &lt; #{date} and
+                sum_key in
+                <foreach collection="keyList" item="key" open="(" close=")" separator=",">
+                    #{key}
+                </foreach>
+            ) a
+        WHERE a.rk = 1
+    </select>
+</mapper>

@@ -1,0 +1,33 @@
+spring:
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_ADDR:192.168.0.46:28848}
+        port: ${SERVICE_PORT_WEB:8080}
+        ip: ${SERVICE_HOST:127.0.0.1}
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:APS;MODE=MYSQL
+    username: test
+    password:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+minio:
+  address: http://127.0.0.1:30007
+  user: santoniadmin
+  password: santoni@2022
+  openBucket: oss-test-files
+  download: https://oss.knittingplatform.com

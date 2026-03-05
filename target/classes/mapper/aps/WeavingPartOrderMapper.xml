@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.santoni.iot.aps.infrastructure.database.aps.WeavingPartOrderMapper">
+
+    <resultMap id="result" type="com.santoni.iot.aps.infrastructure.po.WeavingPartOrderPO">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="institute_id" jdbcType="BIGINT" property="instituteId"/>
+        <result column="factory_id" jdbcType="BIGINT" property="factoryId"/>
+        <result column="weaving_order_id" jdbcType="BIGINT" property="weavingOrderId"/>
+        <result column="produce_order_id" jdbcType="VARCHAR" property="produceOrderId"/>
+        <result column="produce_order_code" jdbcType="VARCHAR" property="produceOrderCode"/>
+        <result column="style_code" jdbcType="VARCHAR" property="styleCode"/>
+        <result column="symbol_id" jdbcType="VARCHAR" property="symbolId"/>
+        <result column="symbol" jdbcType="VARCHAR" property="symbol"/>
+        <result column="sku_code" jdbcType="VARCHAR" property="skuCode"/>
+        <result column="size_id" jdbcType="VARCHAR" property="sizeId"/>
+        <result column="size" jdbcType="VARCHAR" property="size"/>
+        <result column="part_id" jdbcType="VARCHAR" property="partId"/>
+        <result column="part" jdbcType="VARCHAR" property="part"/>
+        <result column="color_id" jdbcType="VARCHAR" property="colorId"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
+        <result column="quantity" jdbcType="INTEGER" property="quantity"/>
+        <result column="planned_quantity" jdbcType="INTEGER" property="plannedQuantity"/>
+        <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime"/>
+        <result column="program" jdbcType="VARCHAR" property="program"/>
+        <result column="task_detail_id" jdbcType="VARCHAR" property="taskDetailId"/>
+        <result column="figure" jdbcType="VARCHAR" property="figure"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="comment" jdbcType="VARCHAR" property="comment"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted_at" jdbcType="BIGINT" property="deletedAt"/>
+    </resultMap>
+
+    <sql id="tableName">Weaving_Part_Order</sql>
+    <sql id="insertColumns">
+        institute_id,
+        factory_id,
+        weaving_order_id,
+        produce_order_id,
+        produce_order_code,
+        style_code,
+        symbol_id,
+        symbol,
+        sku_code,
+        size_id,
+        size,
+        part_id,
+        part,
+        color_id,
+        color,
+        quantity,
+        planned_quantity,
+        finish_time,
+        program,
+        task_detail_id,
+        figure,
+        unit,
+        comment,
+        status
+    </sql>
+
+    <sql id="selectColumns">
+        id,
+        institute_id,
+        factory_id,
+        weaving_order_id,
+        produce_order_id,
+        produce_order_code,
+        style_code,
+        symbol_id,
+        symbol,
+        sku_code,
+        size_id,
+        size,
+        part_id,
+        part,
+        color_id,
+        color,
+        quantity,
+        planned_quantity,
+        finish_time,
+        program,
+        task_detail_id,
+        figure,
+        unit,
+        comment,
+        status,
+        create_time,
+        modified_time,
+        deleted_at
+    </sql>
+
+    <insert id="insert" parameterType="com.santoni.iot.aps.infrastructure.po.WeavingPartOrderPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        (
+            #{po.instituteId},
+            #{po.factoryId},
+            #{po.weavingOrderId},
+            #{po.produceOrderId},
+            #{po.produceOrderCode},
+            #{po.styleCode},
+            #{po.symbolId},
+            #{po.symbol},
+            #{po.skuCode},
+            #{po.sizeId},
+            #{po.size},
+            #{po.partId},
+            #{po.part},
+            #{po.colorId},
+            #{po.color},
+            #{po.quantity},
+            #{po.plannedQuantity},
+            #{po.finishTime},
+            #{po.program},
+            #{po.taskDetailId},
+            #{po.figure},
+            #{po.unit},
+            #{po.comment},
+            #{po.status}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.santoni.iot.aps.infrastructure.po.WeavingPartOrderPO">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+            <include refid="insertColumns"/>
+        )
+        VALUES
+        <foreach collection="poList" item="po" separator=",">
+            (
+                #{po.instituteId},
+                #{po.factoryId},
+                #{po.weavingOrderId},
+                #{po.produceOrderId},
+                #{po.produceOrderCode},
+                #{po.styleCode},
+                #{po.symbolId},
+                #{po.symbol},
+                #{po.skuCode},
+                #{po.sizeId},
+                #{po.size},
+                #{po.partId},
+                #{po.part},
+                #{po.colorId},
+                #{po.color},
+                #{po.quantity},
+                #{po.plannedQuantity},
+                #{po.finishTime},
+                #{po.program},
+                #{po.taskDetailId},
+                #{po.figure},
+                #{po.unit},
+                #{po.comment},
+                #{po.status}
+            )
+        </foreach>
+
+    </insert>
+
+    <update id="update" parameterType="com.santoni.iot.aps.infrastructure.po.WeavingPartOrderPO">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+            quantity = #{po.quantity},
+            planned_quantity = #{po.plannedQuantity},
+            finish_time = #{po.finishTime},
+            status = #{po.status},
+            task_detail_id = #{po.taskDetailId}
+        WHERE
+            id = #{po.id} and deleted_at = 0
+    </update>
+
+    <select id="listByProduceOrderId" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            produce_order_id = #{produceOrderId} and deleted_at = 0
+    </select>
+
+    <select id="getById" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE id = #{id} and deleted_at = 0
+    </select>
+
+    <select id="listById" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE id in
+            <foreach collection="idList" item = "id" open="(" separator="," close=")">
+                #{id}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="listByStatus" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and factory_id = #{factoryId} and
+            status in
+            <foreach collection="statusList" item = "status" open="(" separator="," close=")">
+                #{status}
+            </foreach> and deleted_at = 0
+    </select>
+
+    <select id="listByProduceOrderIds" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            produce_order_id in
+            <foreach collection="produceOrderIds" item="produceOrderId" open="(" separator="," close=")">
+                #{produceOrderId}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listByWeavingOrderIds" resultMap="result">
+        SELECT
+            <include refid="selectColumns"/>
+        FROM
+            <include refid="tableName"/>
+        WHERE
+            weaving_order_id in
+            <foreach collection="weavingOrderIds" item="weavingOrderId" open="(" separator="," close=")">
+                #{weavingOrderId}
+            </foreach>
+            and deleted_at = 0
+    </select>
+
+    <select id="listUnFinishPlanOrders" resultMap="result">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE institute_id = #{instituteId} and quantity != planned_quantity and deleted_at = 0
+    </select>
+</mapper>
